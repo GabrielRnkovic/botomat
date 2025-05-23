@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "plate": "ABC123",
+    "speed_kmh": 90.0,
+    "speed_limit_kmh": 60.0,
+    "timestamp": "2025-05-19 13:38:40",
+    "location": "Test Location",
+    "camera1_image": "detections/camera1_test_1747654720_ABC123.jpg",
+    "camera2_image": "detections/camera2_test_1747654720_ABC123.jpg",
+    "time_diff_seconds": 2.0,
+    "fine_amount": 400
+  },
+  {
+    "id": 2,
+    "plate": "DEF456",
+    "speed_kmh": 80.0,
+    "speed_limit_kmh": 60.0,
+    "timestamp": "2025-05-19 14:02:30",
+    "location": "Test Location",
+    "camera1_image": "detections/camera1_test_1747656150_DEF456.jpg",
+    "camera2_image": "detections/camera2_test_1747656150_DEF456.jpg",
+    "time_diff_seconds": 2.0,
+    "fine_amount": 200
+  },
+  {
+    "id": 3,
+    "plate": "GHI789",
+    "speed_kmh": 65.0,
+    "speed_limit_kmh": 60.0,
+    "timestamp": "2025-05-19 14:04:30",
+    "location": "Test Location",
+    "camera1_image": "detections/camera1_test_1747656270_GHI789.jpg",
+    "camera2_image": "detections/camera2_test_1747656270_GHI789.jpg",
+    "time_diff_seconds": 2.0,
+    "fine_amount": 100
+  },
+  {
+    "id": 4,
+    "plate": "ABC123",
+    "speed_kmh": 70.0,
+    "speed_limit_kmh": 60.0,
+    "timestamp": "2025-05-19 14:21:50",
+    "location": "Test Location",
+    "camera1_image": "detections/camera1_test_1747657310_ABC123.jpg",
+    "camera2_image": "detections/camera2_test_1747657310_ABC123.jpg",
+    "time_diff_seconds": 2.0,
+    "fine_amount": 100
+  },
+  {
+    "id": 5,
+    "plate": "DEF456",
+    "speed_kmh": 90.0,
+    "speed_limit_kmh": 60.0,
+    "timestamp": "2025-05-19 14:28:10",
+    "location": "Test Location",
+    "camera1_image": "detections/camera1_test_1747657690_DEF456.jpg",
+    "camera2_image": "detections/camera2_test_1747657690_DEF456.jpg",
+    "time_diff_seconds": 2.0,
+    "fine_amount": 400
+  },
+  {
+    "id": 6,
+    "plate": "ABC123",
+    "speed_kmh": 65.0,
+    "speed_limit_kmh": 60.0,
+    "timestamp": "2025-05-19 14:30:00",
+    "location": "Test Location",
+    "camera1_image": "detections/camera1_test_1747657800_ABC123.jpg",
+    "camera2_image": "detections/camera2_test_1747657800_ABC123.jpg",
+    "time_diff_seconds": 2.0,
+    "fine_amount": 100
+  }
+]

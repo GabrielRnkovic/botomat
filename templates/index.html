@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Camera System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .violation-row {
+            background-color: #fff8f8;
+        }
+        .badge-speed {
+            font-size: 1rem;
+            padding: 0.5rem 0.7rem;
+        }
+        .system-status {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        .status-on {
+            background-color: #28a745;
+        }
+        .status-off {
+            background-color: #dc3545;
+        }
+        .camera-feed {
+            width: 100%;
+            height: auto;
+            border-radius: 0.25rem;
+        }
+        .speed-gauge {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        .statistics-card {
+            text-align: center;
+        }
+        .statistics-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center">
+                <span class="fs-4">Speed Camera System</span>
+                <div class="ms-auto">
+                    <span id="datetime" class="text-secondary"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- System Status -->
+        <div class="system-status bg-light">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <span class="status-indicator" id="system-indicator"></span>
+                        <span>System: <span id="system-status">...</span></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <span class="status-indicator" id="camera1-indicator"></span>
+                        <span>Camera 1: <span id="camera1-status">...</span></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <span class="status-indicator" id="camera2-indicator"></span>
+                        <span>Camera 2: <span id="camera2-status">...</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Camera Feeds -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Live Camera Feeds</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Camera 1</h6>
+                                <img src="/video_feed/1" class="camera-feed" alt="Camera 1 Feed">
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Camera 2</h6>
+                                <img src="/video_feed/2" class="camera-feed" alt="Camera 2 Feed">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="col-md-4">
+                <div class="card statistics-card">
+                    <div class="card-header">
+                        <h5>System Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <p class="mb-1">Total Vehicles</p>
+                                <p class="statistics-value" id="total-vehicles">0</p>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <p class="mb-1">Violations</p>
+                                <p class="statistics-value text-danger" id="total-violations">0</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1">Avg. Speed</p>
+                                <p class="statistics-value" id="avg-speed">0</p>
+                                <span>km/h</span>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1">Max Speed</p>
+                                <p class="statistics-value" id="max-speed">0</p>
+                                <span>km/h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Violations -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Recent Violations</h5>
+                <span class="badge bg-danger" id="violation-count">0</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Time</th>
+                                <th>License Plate</th>
+                                <th>Speed</th>
+                                <th>Fine Amount</th>
+                                <th>Images</th>
+                            </tr>
+                        </thead>
+                        <tbody id="violations-table">
+                            <!-- Violation rows will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('datetime').textContent = now.toLocaleString();
+        }
+        
+        // Update system status
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Debug information
+                    console.log("Status data:", data);
+                    
+                    // Update system status
+                    const systemStatus = document.getElementById('system-status');
+                    const systemIndicator = document.getElementById('system-indicator');
+                    
+                    if (data.running) {
+                        systemStatus.textContent = 'Running';
+                        systemIndicator.className = 'status-indicator status-on';
+                    } else {
+                        systemStatus.textContent = 'Stopped';
+                        systemIndicator.className = 'status-indicator status-off';
+                    }
+                    
+                    // Update camera 1 status
+                    const camera1Status = document.getElementById('camera1-status');
+                    const camera1Indicator = document.getElementById('camera1-indicator');
+                    
+                    if (data.camera1_connected) {
+                        camera1Status.textContent = 'Connected';
+                        camera1Indicator.className = 'status-indicator status-on';
+                    } else {
+                        camera1Status.textContent = 'Disconnected';
+                        camera1Indicator.className = 'status-indicator status-off';
+                    }
+                    
+                    // Update camera 2 status
+                    const camera2Status = document.getElementById('camera2-status');
+                    const camera2Indicator = document.getElementById('camera2-indicator');
+                    
+                    if (data.camera2_connected) {
+                        camera2Status.textContent = 'Connected';
+                        camera2Indicator.className = 'status-indicator status-on';
+                    } else {
+                        camera2Status.textContent = 'Disconnected';
+                        camera2Indicator.className = 'status-indicator status-off';
+                    }
+                    
+                    // Update violation count
+                    document.getElementById('violation-count').textContent = data.violation_count;
+                })
+                .catch(error => console.error('Error fetching status:', error));
+        }
+        
+        // Update violations table
+        function updateViolations() {
+            fetch('/api/violations')
+                .then(response => response.json())
+                .then(data => {
+                    // Debug information
+                    console.log("Violations data:", data);
+                    
+                    const violationsTable = document.getElementById('violations-table');
+                    violationsTable.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        // If no violations, add a placeholder row
+                        const row = document.createElement('tr');
+                        row.innerHTML = '<td colspan="6" class="text-center">No violations recorded yet</td>';
+                        violationsTable.appendChild(row);
+                    } else {
+                        data.forEach(violation => {
+                            const row = document.createElement('tr');
+                            row.className = 'violation-row';
+                            
+                            row.innerHTML = `
+                                <td>${violation.id}</td>
+                                <td>${violation.timestamp}</td>
+                                <td><strong>${violation.plate}</strong></td>
+                                <td>
+                                    <span class="badge bg-danger badge-speed">
+                                        ${parseFloat(violation.speed_kmh).toFixed(1)} km/h
+                                    </span>
+                                </td>
+                                <td>$${violation.fine_amount}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            `;
+                            
+                            violationsTable.appendChild(row);
+                        });
+                    }
+                    
+                    // Update statistics
+                    if (data.length > 0) {
+                        document.getElementById('total-violations').textContent = data.length;
+                    }
+                })
+                .catch(error => console.error('Error fetching violations:', error));
+        }
+        
+        // Update statistics
+        function updateStatistics() {
+            fetch('/api/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    // Debug information
+                    console.log("Statistics data:", data);
+                    
+                    document.getElementById('total-vehicles').textContent = data.total_measurements;
+                    document.getElementById('avg-speed').textContent = parseFloat(data.average_speed).toFixed(1);
+                    document.getElementById('max-speed').textContent = parseFloat(data.max_speed).toFixed(1);
+                })
+                .catch(error => console.error('Error fetching statistics:', error));
+        }
+        
+        // Force a refresh of the page if no data loads after 15 seconds
+        setTimeout(() => {
+            const totalVehicles = document.getElementById('total-vehicles').textContent;
+            if (totalVehicles === "0") {
+                console.log("No data loaded, refreshing page...");
+                location.reload();
+            }
+        }, 15000);
+        
+        // Initialize
+        updateDateTime();
+        updateStatus();
+        updateViolations();
+        updateStatistics();
+        
+        // Update periodically (more frequently to ensure UI is responsive)
+        setInterval(updateDateTime, 1000);
+        setInterval(updateStatus, 2000);
+        setInterval(updateViolations, 3000);
+        setInterval(updateStatistics, 3000);
+    </script>
+</body>
+</html> 
